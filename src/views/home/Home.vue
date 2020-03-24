@@ -6,7 +6,9 @@
     <home-swiper :banners="banners"/>
     <recommend-view :recommends="recommends"/>
     <feature-view/>
-    <tab-control :titles="['流行','新款','精选']"/>
+    <tab-control :titles="['流行','新款','精选']"
+                 @tabClick="tabClick"/>
+    <good-list :goods="showGoods"/>
     <ul>
       <li>列表1</li>
       <li>列表2</li>
@@ -113,12 +115,13 @@
 </template>
 
 <script>
-  import NavBar from 'components/common/navbar/NavBar';
   import HomeSwiper from './childComps/HomeSwiper'
   import RecommendView from './childComps/Recommendview'
   import FeatureView from './childComps/FeatureView'
 
+  import NavBar from 'components/common/navbar/NavBar';
   import TabControl from 'components/content/tabControl/TabControl'
+  import GoodList from 'components/content/goods/GoodsList'
 
   import {getHomeMultidata, getHomeGoods} from "network/home";
 
@@ -129,7 +132,8 @@
       HomeSwiper,
       RecommendView,
       FeatureView,
-      TabControl
+      TabControl,
+      GoodList
     },
     comments: {
       NavBar,
@@ -142,7 +146,13 @@
           'pop': {page: 0, list: []},
           'new': {page: 0, list: []},
           'sell': {page: 0, list: []}
-        }
+        },
+        currentType: 'pop'
+      }
+    },
+    computed:{
+      showGoods(){
+          return this.goods[this.currentType].list
       }
     },
     created() {
@@ -157,6 +167,25 @@
 
     },
     methods: {
+      /**
+       * 事件监听相关的方法
+       */
+      tabClick(index) {
+        switch (index) {
+          case 0:
+            this.currentType = 'pop'
+            break
+          case 1:
+            this.currentType = 'new'
+            break
+          case 2:
+            this.currentType = 'sell'
+            break
+        }
+      },
+      /**
+       * 网络请求相关的方法
+       */
       getHomeMultidata() {
         getHomeMultidata().then(res => {
           //this.result=res;
@@ -165,10 +194,10 @@
         })
       },
       getHomeGoods(type) {
-        const page=this.goods[type].page+1
-        getHomeGoods(type,page).then(res => {
+        const page = this.goods[type].page + 1
+        getHomeGoods(type, page).then(res => {
           this.goods[type].list.push(...res.data.list)
-          this.goods[type].page+=1
+          this.goods[type].page += 1
         })
       }
     }
@@ -188,5 +217,9 @@
     left: 0;
     top: 0;
     z-index: 9;
+  }
+
+  .tab-control {
+
   }
 </style>

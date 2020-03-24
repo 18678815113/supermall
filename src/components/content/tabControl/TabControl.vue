@@ -28,6 +28,7 @@
     methods:{
       itemClick(index){
         this.currentIndex=index
+        this.$emit('tabClick',index)
       }
     }
   }
@@ -43,6 +44,7 @@
     position: sticky;
     top: 44px;
     background-color: white;
+   z-index: 9;
   }
   .tab-control-item{
     flex: 1;
