@@ -44,7 +44,7 @@
     position: sticky;
     top: 44px;
     background-color: white;
-   z-index: 9;
+   z-index:2;
   }
   .tab-control-item{
     flex: 1;

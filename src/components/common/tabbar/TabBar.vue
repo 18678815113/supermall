@@ -19,6 +19,7 @@
     right: 0;
     bottom: 0;
     box-shadow: 0px -1px 1px rgba(100,100,100,0.2) ;
+    z-index: 5;
   }
 
 </style>

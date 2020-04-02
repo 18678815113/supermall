@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="test">
     <img :src="goodsItem.show.img" alt="">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
@@ -19,6 +19,11 @@
           return {}
         }
       }
+    },
+    methods: {
+      test(){
+        console.log("1111");
+      }
     }
   }
 </script>
@@ -34,6 +39,7 @@
   .goods-item img {
     width: 100%;
     border-radius: 5px;
+    height: 100%;
   }
 
   .goods-info {
