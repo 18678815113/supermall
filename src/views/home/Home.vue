@@ -77,6 +77,12 @@
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
     },
+    mounted(){
+      //3.监听Item图片加载完成
+      this.$bus.$on('itemImageload',()=>{
+        this.$refs.scroll.refresh()
+      })
+    },
     methods: {
       /**
        * 事件监听相关的方法
@@ -119,7 +125,6 @@
         getHomeGoods(type, page).then(res => {
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
-
           this.$refs.scroll.finishPullUp()
         })
       }
