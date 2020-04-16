@@ -18,7 +18,10 @@
 		name: "DetailGoodsInfo",
     props: {
       detailInfo: {
-        type: Object
+        type: Object,
+        default(){
+          return {}
+        }
       }
     },
     data() {
@@ -29,9 +32,9 @@
     },
     methods: {
 	    imgLoad() {
-        if (++this.counter === this.imagesLength) {
+       // if (++this.counter === this.imagesLength) {
 	        this.$emit('imageLoad')
-        }
+       // }
 	    }
     },
     watch: {

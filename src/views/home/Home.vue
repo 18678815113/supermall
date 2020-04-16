@@ -3,17 +3,22 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+    <tab-control :titles="['流行','新款','精选']"
+                 @tabClick="tabClick"
+                 ref="tabControl1"
+                 class="tab-control" v-show="isTabFixed"/>
     <scroll class="content"
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll"
             :pull-up-load="true"
             @pullingUp="loadmore">
-      <home-swiper :banners="banners"/>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"/>
       <recommend-view :recommends="recommends"/>
       <feature-view/>
       <tab-control :titles="['流行','新款','精选']"
-                   @tabClick="tabClick"/>
+                   @tabClick="tabClick"
+                    ref="tabControl2"/>
       <good-list :goods="showGoods"/>
     </scroll>
     <back-top @click.native="backClick"
@@ -33,7 +38,7 @@
   import BackTop from 'components/content/backTop/BackTop'
 
   import {getHomeMultidata, getHomeGoods} from "network/home";
-
+  import {debounce} from 'common/utils'
   import BScroll from 'better-scroll'
 
   export default {
@@ -46,7 +51,8 @@
       TabControl,
       GoodList,
       Scroll,
-      BackTop
+      BackTop,
+      debounce
     },
     comments: {
       NavBar,
@@ -61,13 +67,18 @@
           'sell': {page: 0, list: []}
         },
         currentType: 'pop',
-        isShowBackTop: true
+        isShowBackTop: true,
+        tabOffsetTop: 0,
+        isTabFixed:false,
       }
     },
     computed: {
       showGoods() {
         return this.goods[this.currentType].list
       }
+    },
+    destroyed(){
+
     },
     created() {
       //1.请求多个数据
@@ -77,11 +88,14 @@
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
     },
-    mounted(){
-      //3.监听Item图片加载完成
-      this.$bus.$on('itemImageload',()=>{
-        this.$refs.scroll.refresh()
+    mounted() {
+      //1.图片加载完的时间监听
+      const refresh = debounce(this.$refs.scroll.refresh, 200)
+      //对监听的事件进行保存
+      this.$bus.$on('homeItemImageload',()=>{
+        refresh()
       })
+
     },
     methods: {
       /**
@@ -99,16 +113,24 @@
             this.currentType = 'sell'
             break
         }
+        this.$refs.tabControl1.currentIndex=index
+        this.$refs.tabControl2.currentIndex=index
       },
       backClick() {
         this.$refs.scroll.scrollTo(0, 0)
       },
       contentScroll(position) {
+        //1.判断BackTop是否显示
         this.isShowBackTop = (-position.y) > 1000
+        //2.决定tabControl是否吸顶(position:fixed)
+        this.isTabFixed=(-position.y)>=this.tabOffsetTop
       },
       loadmore() {
         this.getHomeGoods(this.currentType)
         this.$refs.scroll.scroll.refresh()
+      },
+      swiperImageLoad(){
+       this.tabOffsetTop=this.$refs.tabControl2.$el.offsetTop
       },
       /**
        * 网络请求相关的方法
@@ -141,14 +163,18 @@
   .home-nav {
     background-color: var(--color-tint);
     color: white;
-    position: fixed;
-    right: 0;
-    left: 0;
-    top: 0;
+    /*position: fixed;*/
+    /*right: 0;*/
+    /*left: 0;*/
+    /*top: 0;*/
+    /*z-index: 9;*/
+  }
+  .tab-control{
+    position: relative;
     z-index: 9;
   }
-
   .content {
+    overflow: hidden;
     position: absolute;
     top: 44px;
     bottom: 49px;
@@ -156,4 +182,5 @@
     right: 0;
 
   }
+
 </style>

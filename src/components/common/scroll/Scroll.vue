@@ -37,23 +37,27 @@
 
       )
       //2.监听滚动的区域
-      this.scroll.on('scroll',(position)=>{
-         this.$emit('scroll',position)
-      })
+      if (this.probeType===2||this.probeType===3){
+        this.scroll.on('scroll',(position)=>{
+          this.$emit('scroll',position)
+        })
+      }
       //监听上拉事件
-      this.scroll.on('pullingUp',()=>{
-        this.$emit('pullingUp')
-      })
+      if (this.pullUpLoad){
+        this.scroll.on('pullingUp',()=>{
+          this.$emit('pullingUp')
+        })
+      }
     },
     methods:{
       scrollTo(x,y,time){
-        this.scroll.scrollTo(x,y,time)
+       this.scroll && this.scroll.scrollTo(x,y,time)
       },
       finishPullUp(){
-        this.scroll.finishPullUp()
+        this.scroll && this.scroll.finishPullUp()
       },
       refresh(){
-        this.scroll.refresh()
+        this.scroll && this.scroll.refresh()
       }
     }
   }

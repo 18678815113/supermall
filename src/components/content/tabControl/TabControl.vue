@@ -42,7 +42,6 @@
     height: 40px;
     line-height: 40px;
     position: sticky;
-    top: 44px;
     background-color: white;
    z-index:2;
   }
