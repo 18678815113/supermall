@@ -13,6 +13,7 @@
     <detail-bottom-bar @addCart="addToCart"/>
     <back-top @click.native="backClick"
               v-show="isShowBackTop"/>
+    <toast :message="message" :show="show"/>
   </div>
 </template>
 
@@ -30,6 +31,7 @@
   import BackTop from 'components/content/backTop/BackTop'
   import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "network/detail";
   import GoodsList from 'components/content/goods/GoodsList'
+  import Toast from 'components/common/toast/Toast'
 
   export default {
     name: "Detail",
@@ -44,7 +46,8 @@
       DetailCommentInfo,
       GoodsList,
       DetailBottomBar,
-      BackTop
+      BackTop,
+      Toast
     },
     data() {
       return {
@@ -58,8 +61,10 @@
         recommends: [],
         themeTopYs: [],
         getThemeTopY: null,
-        currentIndex:0,
-        isShowBackTop:false
+        currentIndex: 0,
+        isShowBackTop: false,
+        message: '',
+        show: false
       }
     },
     created() {
@@ -129,16 +134,16 @@
         //获取Y值
         const positionY = -position.y
         let length = this.themeTopYs.length
-        for (let i = 0; i < length-1; i++) {
+        for (let i = 0; i < length - 1; i++) {
           // if (positionY > this.themeTopYs[i] && positionY < this.themeTopYs[i + 1]) {
           //
           // }
-        //  if (this.currentIndex!==i&&((i < length - 1 && positionY >=this.themeTopYs[i] && positionY < this.themeTopYs[i + 1]) || (i === length - 1 && positionY > this.themeTopYs[i]))) {
-          if (this.currentIndex!==i&&(positionY>=this.themeTopYs[i]&&positionY<this.themeTopYs[i+1])) {
+          //  if (this.currentIndex!==i&&((i < length - 1 && positionY >=this.themeTopYs[i] && positionY < this.themeTopYs[i + 1]) || (i === length - 1 && positionY > this.themeTopYs[i]))) {
+          if (this.currentIndex !== i && (positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i + 1])) {
             //console.log(i)
-            this.currentIndex=i
+            this.currentIndex = i
             console.log(this.currentIndex)
-            this.$refs.nav.currentIndex=this.currentIndex
+            this.$refs.nav.currentIndex = this.currentIndex
           }
           // 是否显示回到顶部
           //1.判断BackTop是否显示
@@ -146,20 +151,27 @@
         }
       },
       backClick() {
-        this.$refs.scroll.scrollTo(0, 0,300)
+        this.$refs.scroll.scrollTo(0, 0, 300)
       },
-      addToCart(){
+      addToCart() {
         //1.获取商品信息
-        console.log("11111")
-        const  product={}
-        product.image=this.topImages[0];
-        product.title=this.goods.title;
-        product.desc=this.goods.desc;
-        product.price=this.goods.realPrice
-        product.iid=this.iid
+        const product = {}
+        product.image = this.topImages[0];
+        product.title = this.goods.title;
+        product.desc = this.goods.desc;
+        product.price = this.goods.realPrice
+        product.iid = this.iid
         //2将商品信息添加到购物车里
         //this.$store.commit('addCart',product)
-        this.$store.dispatch('addCart',product)
+
+        this.$store.dispatch('addCart', product).then(res => {
+          this.show = true
+          this.message = res
+          setTimeout(() => {
+            this.show = false
+            this.message = ''
+          }, 1500)
+        })
       }
     }
   }
